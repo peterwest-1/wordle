@@ -1,0 +1,28 @@
+/* * {
+  outline: 1px solid red;
+} */
+
+button {
+  all: unset;
+  cursor: pointer;
+  color: white;
+}
+
+.top {
+  margin: 5px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+
+  align-items: center;
+}
+.buttonContainer {
+  display: flex;
+  gap: 5px;
+  margin: 5px;
+}
+.title {
+  color: white;
+  font-weight: 700;
+  font-size: 37px;
+}

@@ -1,0 +1,32 @@
+:root {
+  --green: #618b55;
+  --yellow: #ad9b4a;
+  --gray: #3a3a3c;
+  --border: rgb(57, 57, 59);
+}
+
+.tile {
+  width: 60px;
+  height: 60px;
+  border: 2px solid var(--border);
+  padding: 10px;
+  margin: 2px;
+  font-size: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  text-transform: uppercase;
+}
+
+.tile.correct {
+  background-color: var(--green);
+}
+
+.tile.location {
+  background-color: var(--yellow);
+}
+
+.tile.incorrect {
+  background-color: var(--gray);
+}
