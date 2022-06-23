@@ -9,11 +9,8 @@ export const Bar: React.FC<BarProps> = ({}) => {
         <button>M</button>
         <button>?</button>
       </div>
-      <div
-        className="
-      title"
-      >
-        Wordle Clone
+      <div>
+        <h1 className="title"> Wordle Clone</h1>
       </div>
       <div className="buttonContainer">
         <button>S</button>
