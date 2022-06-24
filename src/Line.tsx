@@ -1,7 +1,6 @@
-import { WORD_LENGTH } from "./constants";
+import { WORD_LENGTH } from "./data/constants";
 import "./Line.css";
 import { Tile } from "./Tile";
-import { randomKey } from "./utilities/randomKey";
 
 interface LineProps {
   guess: string;
@@ -10,21 +9,21 @@ interface LineProps {
 }
 
 export const Line: React.FC<LineProps> = ({ guess, solution, isCurrentGuess }) => {
-  const tiles: any[] = [];
+  const tiles: React.ReactElement[] = [];
 
-  for (let index = 0; index < WORD_LENGTH; index++) {
+  for (let index: number = 0; index < WORD_LENGTH; index++) {
     let classString = "tile";
     const currentLetter = guess[index];
     if (!isCurrentGuess && guess !== "") {
       if (currentLetter === solution[index]) {
         classString += " correct";
       } else if (solution.includes(currentLetter)) {
-        classString += " location";
+        classString += " contained";
       } else {
         classString += " incorrect";
       }
     }
-    tiles.push(<Tile className={classString} key={randomKey()} letter={currentLetter} />);
+    tiles.push(<Tile className={classString} key={index} letter={currentLetter} />);
   }
   return <div className="line">{tiles.map((tile) => tile)}</div>;
 };

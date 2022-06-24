@@ -1,93 +1,60 @@
 import { useEffect, useState } from "react";
-import "./App.css";
-import { NUMBER_GUESSES, WORD_LENGTH } from "./constants";
+import { NUMBER_GUESSES, WORD_LENGTH } from "./data/constants";
 import { Line } from "./Line";
-import { randomKey } from "./utilities/randomKey";
-
-import WORDS from "./data/words.json";
-import DICTIONARY from "./data/dictionary.json";
 import { Bar } from "./Bar";
+import { Keyboard } from "./Keyboard";
+import "./App.css";
+import { getWord, isWordInDictionary } from "./data/words";
 
 const App = () => {
-  const [guesses, setGuesses] = useState(Array(NUMBER_GUESSES).fill(null));
-  const [solution, setSolution] = useState("");
-  const [currentGuess, setCurrentGuess] = useState("");
   const [isGameCompleted, setIsGameCompleted] = useState(false);
+  const [solution] = useState(getWord());
+  const [guesses, setGuesses] = useState(Array(NUMBER_GUESSES).fill(null));
+  const [currentGuess, setCurrentGuess] = useState("");
 
-  useEffect(() => {
-    /*
-    const fetchWord = async () => {
-      const response = await fetch(API_URL, { headers: { "Access-Control-Allow-Origin": "*" } });
-      console.log(response);
-      const wordsList = await response.json();
-      const word = wordsList[Math.floor(Math.random() * wordsList.length)];
-      setSolution(word);
-    };
-    */
+  const handleKeyPress = (e: KeyboardEvent) => {
+    handleGame(e.key);
+  };
 
-    const fetchWord = () => {
-      const word = WORDS[Math.floor(Math.random() * WORDS.length)];
-      setSolution(word);
-    };
-    fetchWord();
-  }, []);
+  const handleGame = (key: string) => {
+    if (isGameCompleted) return;
+    handleBackspace(key);
+    handleSubmit(key);
+    if (currentGuess.length >= WORD_LENGTH) return;
+    if (key.match(/^[a-zA-Z]{1}$/)) setCurrentGuess(currentGuess + key);
+  };
 
-  const handleBackspace = (key: string, currentGuessLength: number) => {
-    if ((key === "Backspace" || key === "Delete") && currentGuessLength > 0) {
+  const handleBackspace = (key: string) => {
+    if ((key === "Backspace" || key === "Delete") && currentGuess.length > 0) {
       setCurrentGuess((guess) => guess.slice(0, -1));
       return;
     }
   };
 
-  const handleEnter = (key: string, currentGuessLength: number) => {
+  const handleSubmit = (key: string) => {
     if (key === "Enter") {
-      if (currentGuessLength !== WORD_LENGTH) {
-        return;
-      }
+      if (currentGuess.length !== WORD_LENGTH) return;
+
+      //TODO: - Add visual feedback for word not in dictionary
+      if (!isWordInDictionary(currentGuess)) return;
 
       const uppercaseGuess = currentGuess.toUpperCase();
-
-      if (!DICTIONARY.includes(uppercaseGuess)) {
-        return;
-      }
-
       const newGuesses = [...guesses];
       newGuesses[guesses.findIndex((value) => value === null)] = uppercaseGuess;
 
       setGuesses([...newGuesses]);
       setCurrentGuess("");
 
-      if (solution === uppercaseGuess) {
-        setIsGameCompleted(true);
-        return;
-      }
+      if (solution === uppercaseGuess) setIsGameCompleted(true);
     }
   };
 
   useEffect(() => {
-    if (guesses.findIndex((value) => value === null) === -1) {
-      setIsGameCompleted(true);
-    }
+    if (guesses.findIndex((value) => value === null) === -1) setIsGameCompleted(true);
   }, [guesses, isGameCompleted]);
 
   useEffect(() => {
-    const handleKeyPress = (e: any) => {
-      if (isGameCompleted) {
-        return;
-      }
-
-      handleBackspace(e.key, currentGuess.length);
-      handleEnter(e.key, currentGuess.length);
-
-      if (currentGuess.length >= WORD_LENGTH) {
-        return;
-      }
-
-      if (e.key.match(/^[a-zA-Z]{1}$/)) setCurrentGuess(currentGuess + e.key);
-    };
-
     window.addEventListener("keydown", handleKeyPress);
-
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
@@ -97,14 +64,12 @@ const App = () => {
     <div className="App">
       <Bar />
       <div className={isGameCompleted ? "solution" : "hidden"}>{isGameCompleted ? solution : null}</div>
-
       <div className="board">
-        {guesses.map((guess: string, i: number) => {
-          const isCurrentGuess = i === guesses.findIndex((val) => val === null);
-
+        {guesses.map((guess: string, index: number) => {
+          const isCurrentGuess = index === guesses.findIndex((val) => val === null);
           return (
             <Line
-              key={randomKey()}
+              key={index}
               guess={isCurrentGuess ? currentGuess : guess ?? ""}
               solution={solution}
               isCurrentGuess={isCurrentGuess}
@@ -112,6 +77,7 @@ const App = () => {
           );
         })}
       </div>
+      <Keyboard guesses={guesses} solution={solution} onKeyPressed={handleGame} />
     </div>
   );
 };

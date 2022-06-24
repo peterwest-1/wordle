@@ -1,21 +1,14 @@
 import React from "react";
 import "./Bar.css";
-interface BarProps {}
 
-export const Bar: React.FC<BarProps> = ({}) => {
+export const Bar: React.FC = () => {
   return (
     <div className="top">
-      <div className="buttonContainer">
-        <button>M</button>
-        <button>?</button>
-      </div>
+      <div></div>
       <div>
-        <h1 className="title"> Wordle Clone</h1>
+        <h2 className="title"> Wordle</h2>
       </div>
-      <div className="buttonContainer">
-        <button>S</button>
-        <button>S</button>
-      </div>
+      <div></div>
     </div>
   );
 };

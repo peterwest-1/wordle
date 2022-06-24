@@ -23,7 +23,7 @@
   background-color: var(--green);
 }
 
-.tile.location {
+.tile.contained {
   background-color: var(--yellow);
 }
 

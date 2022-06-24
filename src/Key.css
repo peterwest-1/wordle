@@ -1,0 +1,18 @@
+:root {
+  --green: #618b55;
+  --yellow: #ad9b4a;
+  --gray: #3a3a3c;
+  --border: rgb(57, 57, 59);
+}
+
+.key.correct {
+  background-color: var(--green);
+}
+
+.key.contained {
+  background-color: var(--yellow);
+}
+
+.key.incorrect {
+  background-color: rgb(58, 58, 60);
+}
