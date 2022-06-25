@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { NUMBER_GUESSES, WORD_LENGTH } from "./data/constants";
 import { Line } from "./Line";
 import { Bar } from "./Bar";
@@ -12,42 +12,53 @@ const App = () => {
   const [guesses, setGuesses] = useState(Array(NUMBER_GUESSES).fill(null));
   const [currentGuess, setCurrentGuess] = useState("");
 
-  const handleKeyPress = (e: KeyboardEvent) => {
-    handleGame(e.key);
-  };
+  const handleBackspace = useCallback(
+    (key: string) => {
+      if ((key === "Backspace" || key === "Delete") && currentGuess.length > 0) {
+        setCurrentGuess((guess) => guess.slice(0, -1));
+        return;
+      }
+    },
+    [currentGuess.length]
+  );
 
-  const handleGame = (key: string) => {
-    if (isGameCompleted) return;
-    handleBackspace(key);
-    handleSubmit(key);
-    if (currentGuess.length >= WORD_LENGTH) return;
-    if (key.match(/^[a-zA-Z]{1}$/)) setCurrentGuess(currentGuess + key);
-  };
+  const handleSubmit = useCallback(
+    (key: string) => {
+      if (key === "Enter") {
+        if (currentGuess.length !== WORD_LENGTH) return;
 
-  const handleBackspace = (key: string) => {
-    if ((key === "Backspace" || key === "Delete") && currentGuess.length > 0) {
-      setCurrentGuess((guess) => guess.slice(0, -1));
-      return;
-    }
-  };
+        //TODO: - Add visual feedback for word not in dictionary
+        if (!isWordInDictionary(currentGuess)) return;
 
-  const handleSubmit = (key: string) => {
-    if (key === "Enter") {
-      if (currentGuess.length !== WORD_LENGTH) return;
+        const uppercaseGuess = currentGuess.toUpperCase();
+        const newGuesses = [...guesses];
+        newGuesses[guesses.findIndex((value) => value === null)] = uppercaseGuess;
 
-      //TODO: - Add visual feedback for word not in dictionary
-      if (!isWordInDictionary(currentGuess)) return;
+        setGuesses([...newGuesses]);
+        setCurrentGuess("");
 
-      const uppercaseGuess = currentGuess.toUpperCase();
-      const newGuesses = [...guesses];
-      newGuesses[guesses.findIndex((value) => value === null)] = uppercaseGuess;
+        if (solution === uppercaseGuess) setIsGameCompleted(true);
+      }
+    },
+    [currentGuess, guesses, solution]
+  );
 
-      setGuesses([...newGuesses]);
-      setCurrentGuess("");
-
-      if (solution === uppercaseGuess) setIsGameCompleted(true);
-    }
-  };
+  const handleGame = useCallback(
+    (key: string) => {
+      if (isGameCompleted) return;
+      handleBackspace(key);
+      handleSubmit(key);
+      if (currentGuess.length >= WORD_LENGTH) return;
+      if (key.match(/^[a-zA-Z]{1}$/)) setCurrentGuess(currentGuess + key);
+    },
+    [currentGuess, handleBackspace, handleSubmit, isGameCompleted]
+  );
+  const handleKeyPress = useCallback(
+    (e: KeyboardEvent) => {
+      handleGame(e.key);
+    },
+    [handleGame]
+  );
 
   useEffect(() => {
     if (guesses.findIndex((value) => value === null) === -1) setIsGameCompleted(true);
@@ -58,7 +69,7 @@ const App = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
-  }, [currentGuess, guesses, solution, isGameCompleted]);
+  }, [handleKeyPress]);
 
   return (
     <div className="App">

@@ -14,7 +14,7 @@ export const isWordInDictionary = (word: string): boolean => {
 
 export const getKeyClasses = (guesses: string[], solution: string): Dictionary<string> => {
   let dic: Dictionary<string> = {};
-  guesses.map((guess) => {
+  guesses.forEach((guess) => {
     if (guess !== null && guess !== "") {
       for (let index: number = 0; index < WORD_LENGTH; index++) {
         let classString = "key";
@@ -22,9 +22,7 @@ export const getKeyClasses = (guesses: string[], solution: string): Dictionary<s
         if (currentLetter === solution[index]) {
           classString += KEY_STATE.CORRECT;
         } else if (solution.includes(currentLetter)) {
-          if (dic[currentLetter] !== undefined) {
-            if (dic[currentLetter].includes(KEY_STATE.CORRECT)) return;
-          }
+          if (dic[currentLetter] !== undefined && dic[currentLetter].includes(KEY_STATE.CORRECT)) return;
           classString += KEY_STATE.CONTAINED;
         } else {
           classString += KEY_STATE.INCORRECT;
