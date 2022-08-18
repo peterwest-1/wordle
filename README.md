@@ -1,5 +1,5 @@
 # Wordle Clone
-Check it out [here](peterwest-1.github.io/wordle/)
+Check it out [here](https://peterwest-1.github.io/wordle/)
 ## TODO
 
 Save to state to localStorage
